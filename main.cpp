@@ -266,6 +266,8 @@ int main() {
     T.setZero();
     J.setZero();
     std::cout << T.transpose() << std::endl;
+    T(0)=1.99;
+    T(1) = 0.990;
     J(0,0) = ( T(0)-2 ) /sqrt( pow(T(0)-2,2) + pow(T(1)-1,2) );
     J(1,0) =  ( T(0)-2 ) /sqrt( pow(T(0)-2,2) + pow(T(1)-1,2) );
     J(0,1) = (T(1)-1)/sqrt(pow(T(0)-2,2) + pow(T(1)-1,2));
@@ -277,9 +279,11 @@ int main() {
     T.setZero();
     H.setZero();
 //    std::cout << J << std::endl;
-    float lambda = 0.1;
+    float lambda = 100;
     float nu=2;
     pre_T.setZero();
+    pre_T(0)=1.99;
+    pre_T(1) = 0.990;
 
 //    std::cout << d.transpose()*d << std::endl;
     for (int k=0; k<100; k++){
@@ -289,9 +293,9 @@ int main() {
         dT = -C.inverse() * J.transpose() * d;
 //        std::cout << d.transpose() << std::endl;
         T = pre_T + dT;
-        if(fabs(dT(0)) < 0.000001 && fabs(dT(1) < 0.00001)){
-            break;
-        }
+//        if(fabs(dT(0)) < 0.0000001 && fabs(dT(1) < 0.000001)){
+//            break;
+//        }
         for (int i=0;i <2; i++){
             Tx2[i] = x2[i] + T;
         }
@@ -307,14 +311,14 @@ int main() {
         h_numer = dT.transpose()*(lambda * H * dT - J.transpose()*d );
         h = h/h_numer;
 
-        if(h > 0){
+        if(h > 0.001){
             float jaco_numer;
             pre_T = T;
             J(0,0) = ( T(0)-2 ) /sqrt( pow(T(0)-2,2) + pow(T(1)-1,2) );
             J(1,0) =  ( T(0)-2 ) /sqrt( pow(T(0)-2,2) + pow(T(1)-1,2) );
             J(0,1) = (T(1)-1)/sqrt(pow(T(0)-2,2) + pow(T(1)-1,2));
             J(1,1) = (T(1)-1)/sqrt(pow(T(0)-2,2) + pow(T(1)-1,2));
-
+            float rho = (1- pow(2* h-1,3));
             if( (1- pow(2* h-1,3)) > 1/3){
                 lambda = lambda * (1- pow(2* h-1,3));
             }else{
@@ -327,7 +331,7 @@ int main() {
         }
 
     }
-    std::cout << cos(0) << std::endl;
+    std::cout << pre_T.transpose()<< std::endl;
 //
     return 0;
 }
